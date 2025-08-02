@@ -5,10 +5,15 @@ fn main() {
     let user = get_user();
     let os = get_os();
     println!(
-        "Hello, {user}! \nYou are running this program on a {} system.",
+        "Hello, {user}! \nYou are running this program on a {} system with {} cpu architecture.",
         match os {
             OperatingSystem::Linux => "Linux",
             OperatingSystem::MacOS => "macOS",
+        },
+        match get_architecture() {
+            Architecture::Bit64 => "64-bit",
+            Architecture::Bit32 => "32-bit",
+            Architecture::Aarch64 => "AArch64",
         }
     );
     println!("Current time: {}", get_time());
@@ -48,4 +53,24 @@ fn get_os() -> OperatingSystem {
 fn get_time() -> String {
     use chrono::Local;
     Local::now().format("%Y-%m-%d %H:%M:%S").to_string()
+}
+
+enum Architecture {
+    Bit64,
+    Bit32,
+    Aarch64,
+}
+fn get_architecture() -> Architecture {
+    #[cfg(target_arch = "x86_64")]
+    {
+        Architecture::Bit64
+    }
+    #[cfg(target_arch = "x86")]
+    {
+        Architecture::Bit32
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        Architecture::Aarch64
+    }
 }
