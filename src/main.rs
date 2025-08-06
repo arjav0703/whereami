@@ -1,11 +1,11 @@
 fn main() {
-    let _ = Instant::now();
+    let time = Instant::now();
     prevent_windows();
 
     let user = get_user();
     let os = get_os();
     println!(
-        "Hello, {user}! \nYou are running this program on a {} system with {} cpu architecture.",
+        "User: {user}! \nOS: {} \nCPU architecture: {}",
         match os {
             OperatingSystem::Linux => "Linux",
             OperatingSystem::MacOS => "macOS",
@@ -16,11 +16,13 @@ fn main() {
             Architecture::Aarch64 => "AArch64",
         }
     );
+    let distro = get_distro();
+    println!("Distro: {distro}");
     println!("Current time: {}", get_time());
-    dbg!(Instant::now().elapsed());
+    dbg!(time.elapsed());
 }
 
-use std::{env, time::Instant};
+use std::{env, thread::sleep, time::Instant};
 fn get_user() -> String {
     env::var("USER").unwrap_or_else(|_| "unknown".to_string())
 }
@@ -72,5 +74,24 @@ fn get_architecture() -> Architecture {
     #[cfg(target_arch = "aarch64")]
     {
         Architecture::Aarch64
+    }
+}
+
+fn get_distro() -> String {
+    #[cfg(target_os = "linux")]
+    {
+        use std::fs;
+
+        let content = fs::read_to_string("/etc/os-release").unwrap_or_default();
+        for line in content.lines() {
+            if line.starts_with("PRETTY_NAME=") {
+                return line["PRETTY_NAME=".len()..].trim_matches('"').to_string();
+            }
+        }
+        "Linux Unknown".to_string()
+    }
+    #[cfg(target_os = "macos")]
+    {
+        "macOS".to_string()
     }
 }
