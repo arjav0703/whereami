@@ -13,13 +13,13 @@ fn main() {
         match get_architecture() {
             Architecture::Bit64 => "64-bit",
             Architecture::Bit32 => "32-bit",
-            Architecture::Aarch64 => "AArch64",
+            Architecture::Aarch64 => "Arch64",
         }
     );
     let distro = get_distro();
     println!("Distro: {distro}");
     println!("Current time: {}", get_time());
-    dbg!(time.elapsed());
+    // dbg!(time.elapsed());
 }
 
 use std::{env, thread::sleep, time::Instant};
