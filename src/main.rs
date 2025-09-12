@@ -2,11 +2,11 @@ fn main() {
     let _time = Instant::now();
     prevent_windows();
 
-    let user = get_user();
+    let user = format!("{} ({})", get_user(), get_home_dir());
     let hostname = get_hostname();
     let os = get_os();
     println!(
-        "User: {user}! \nOS: {} \nCPU architecture: {} \nHostname: {hostname} \nCPU Model: {}",
+        "User: {user} \nOS: {} \nCPU architecture: {} \nHostname: {hostname} \nCPU Model: {}",
         match os {
             OperatingSystem::Linux => "Linux",
             OperatingSystem::MacOS => "macOS",
@@ -28,7 +28,7 @@ fn main() {
     // dbg!(time.elapsed());
 }
 
-use std::{env, time::Instant};
+use std::{env, fmt::format, time::Instant};
 fn get_user() -> String {
     env::var("USER").unwrap_or_else(|_| "unknown".to_string())
 }
@@ -204,4 +204,8 @@ fn get_modal() -> String {
             "Unknown CPU Model".to_string()
         }
     }
+}
+
+fn get_home_dir() -> String {
+    env::var("HOME").unwrap_or_else(|_| "unknown".to_string())
 }
