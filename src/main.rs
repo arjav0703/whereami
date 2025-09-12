@@ -182,15 +182,24 @@ fn get_modal() -> String {
     {
         use std::process::Command;
 
-        let output = Command::new("sysctl")
+        let name_output = Command::new("sysctl")
             .arg("-n")
             .arg("machdep.cpu.brand_string")
             .output()
             .unwrap_or_else(|_| panic!("Failed to execute sysctl command"));
 
-        if output.status.success() {
-            let model = String::from_utf8_lossy(&output.stdout);
-            model.trim().to_string()
+        let cores_output = Command::new("sysctl")
+            .arg("-n")
+            .arg("machdep.cpu.core_count")
+            .output()
+            .unwrap_or_else(|_| panic!("Failed to execute sysctl command"));
+
+        if name_output.status.success() && cores_output.status.success() {
+            let model = String::from_utf8_lossy(&name_output.stdout);
+            let cores = String::from_utf8_lossy(&cores_output.stdout);
+            model.trim().to_string();
+            cores.trim().to_string();
+            format!("{} ({} cores)", model.trim(), cores.trim())
         } else {
             "Unknown CPU Model".to_string()
         }
